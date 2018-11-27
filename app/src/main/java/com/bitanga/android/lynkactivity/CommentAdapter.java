@@ -56,6 +56,5 @@ public class CommentAdapter extends FirestoreAdapter<CommentAdapter.CommentHolde
             }
         }
 
-
     }
 }

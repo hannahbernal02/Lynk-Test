@@ -11,7 +11,7 @@
         android:id="@+id/user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/greySecondary"
+        android:textColor="@color/mediumGray"
         android:maxLines="1"
         android:ellipsize="end"
         android:maxWidth="120dp"
@@ -41,13 +41,13 @@
         android:layout_below="@+id/user"
         android:layout_marginBottom="4dp"
         android:layout_marginTop="4dp"
-        android:textColor="@color/greyPrimary"
+        android:textColor="@color/darkGray"
         tools:text="Comment for this post"/>
 
     <View
         style="@style/AppTheme.Divider"
         android:layout_below="@id/commentContent"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
 </RelativeLayout>

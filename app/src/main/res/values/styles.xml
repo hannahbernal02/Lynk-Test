@@ -3,12 +3,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <!--<item name="colorPrimary">#ADD8E6</item>-->
-        <!--<item name="colorPrimaryDark">#4ea6c2</item>-->
-        <!--<item name="colorAccent">#c24e77</item>-->
+        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <!--<item name="colorAccent">@color/colorAccent</item>-->
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -24,7 +21,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">4dp</item>
         <item name="android:layout_marginRight">4dp</item>
-        <item name="android:textColor">@color/greySecondary</item>
+        <item name="android:textColor">@color/mediumGray</item>
 
     </style>
 
@@ -34,7 +31,7 @@
     </style>
 
     <style name="AppTheme.Subheader">
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-smallcaps</item>
         <item name="android:textSize">16sp</item>
     </style>
 

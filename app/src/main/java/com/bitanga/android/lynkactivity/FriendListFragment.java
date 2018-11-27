@@ -14,6 +14,11 @@ public class FriendListFragment extends Fragment {
     //so need to include User class? to add attributes
     private RecyclerView mRecyclerView;
 
+    public FriendListFragment() {
+    }
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

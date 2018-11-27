@@ -33,7 +33,7 @@ public class CommentDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_comment, container, false);
 
-        mCommentContent = (EditText) v.findViewById(R.id.commentContent);
+        mCommentContent = (EditText) v.findViewById(R.id.postFormText);
 
         mSubmitButton = v.findViewById(R.id.postFormButton);
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +42,7 @@ public class CommentDialogFragment extends DialogFragment {
                 /**create new comment when click submit on dialog**/
                 Comment comment = new Comment(
                         FirebaseAuth.getInstance().getCurrentUser(),
+                        //error: java.lang.NullPointerException: Attempt to invoke virtual method 'android.text.Editable android.widget.EditText.getText()' on a null object reference
                         mCommentContent.getText().toString());
                 if (mCommentListener != null) {
                     mCommentListener.onComment(comment);

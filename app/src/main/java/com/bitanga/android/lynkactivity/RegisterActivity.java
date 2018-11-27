@@ -4,6 +4,7 @@
 package com.bitanga.android.lynkactivity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -16,24 +17,42 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final String user = "USER";
+
+    private static final String TAG = "failied to create user";
     EditText userLoginName;
     EditText userPassword;
     EditText userEmail;
     Button registerButton;
     private FirebaseAuth mAuth;
     ProgressBar mProgressBar;
+    private FirebaseFirestore db;
+    private DocumentReference mUserRef;
     String emailRegex = "^[A-Za-z0-9.]+@\\bcalbaptist.edu";
+
+    /**Session to store user credentials in shared preferences**/
+    public static final String MYPREFERENCES = "MyPrefs";
+    public static final String UserName = "userNameKey";
+    public static final String Email = "emailKey";
+    SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +68,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         mProgressBar = (ProgressBar) findViewById((R.id.progress_bar));
         findViewById(R.id.create_button).setOnClickListener(this);
 
+        mSharedPreferences = getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
     }
 
     //If create button is pressed, registerUser() is run and text fields sent to Firebase
@@ -66,30 +86,34 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    public boolean searchBadWords(String test) {
-        String bad = "(.*shit.*|shit|.*ass.*|ass|.*fuck.*|fuck|" +
-                ".*piss.*|piss|.*bitch.*|bitch|.*whore.*|whore|cunt|" +
-                ".*cunt.*|.*damn.*|damn)";
-        if(test.matches(bad)) {
-            System.out.print(test);
-            return true;
+    public boolean searchBadWords(Context context, String word) throws IOException {
+        BufferedReader reader;
+        String lowerCaseWord = word.toLowerCase();
+        String regexWord = "(\\W" + lowerCaseWord + "\\W|\\W" + lowerCaseWord + "|" + lowerCaseWord + "\\W|" + lowerCaseWord + ")";
+        try{
+            InputStream file = context.getAssets().open("BadText.txt");
+            reader = new BufferedReader(new InputStreamReader(file));
+            String temp;
+            while((temp = reader.readLine()) != null){
+                if(Pattern.matches(regexWord, temp)) {
+                    Log.e("temp:", temp);
+                    Log.e("regex:", regexWord);
+                    return true;
+                }
+            }
+        } catch(IOException ioe){
+            ioe.printStackTrace();
         }
-//        File file = new File("/Users/v3l0z/Desktop/lynk/app/src/main/assets/BadWords.txt");
-//        LineIterator line = FileUtils.lineIterator(file, "UTF-8");
-//        while(line.hasNext()) {
-//            String temp = line.nextLine();
-//            if(temp.contains((CharSequence) test));
-//                System.out.print(temp);
-//                return true;
-//        }
+
         return false;
     }
 
     //This class takes the edittext fields and stores them into Firebase
     private void registerUser() throws IOException {
-        String username = userLoginName.getText().toString().trim();
+        final String username = userLoginName.getText().toString().trim();
         String pass = userPassword.getText().toString().trim();
-        String email = userEmail.getText().toString().trim();
+        final String email = userEmail.getText().toString().trim();
+        db = FirebaseFirestore.getInstance();
 
         //If the email is empty - displays toasts that email field is null
         if (email.isEmpty()) {
@@ -112,8 +136,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
-        //If username field empty - display toast error
-        if (searchBadWords(username)) {
+        //If username contains profanity, display error
+        if (searchBadWords(getApplicationContext(), username)) {
             userLoginName.setError("Profanity not allowed");
             userLoginName.requestFocus();
             return;
@@ -127,18 +151,37 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
-        if (searchBadWords(pass)) {
-            userLoginName.setError("Profanity not allowed");
-            userLoginName.requestFocus();
-            return;
-        }
-
         //If password length is less than 6 chars - display toast error
         if (userPassword.length() < 6) {
             userPassword.setError("Must be longer than 6 characters");
             userPassword.requestFocus();
             return;
         }
+
+        User user = new User(email, username, pass, 0);
+        db.collection("users").document(username).set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                        Log.d("Lynk", "user added to db");
+
+                        /**save user credentials in session**/
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+
+                        editor.putString(UserName, username);
+                        editor.putString(Email, email);
+//                        editor.commit();
+                        editor.apply();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                        Log.w("Lynk", "unsuccessful user not added to db", e);
+                    }
+                });
 
         //Set progress bar visible
         mProgressBar.setVisibility(View.VISIBLE);

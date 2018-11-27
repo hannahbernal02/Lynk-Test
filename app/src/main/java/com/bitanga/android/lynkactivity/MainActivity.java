@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity
                 mViewPager.setCurrentItem(1);
                 break;
             case R.id.nav_most_lynked:
-                mTitle="Your Most Lynked Posts";
+                mTitle="Most Lynked Posts";
                 mViewPager.setCurrentItem(2);
                 break;
             case R.id.nav_friend_list:
@@ -109,22 +109,5 @@ public class MainActivity extends AppCompatActivity
         return true;
 
     }
-
-//    public android.support.v4.app.Fragment fragmentForPosition(int sectionNumber) {
-////        switch (sectionNumber) {
-////            case 0:
-//////                return new Tab1Fragment();
-////                return new PostListFragment();
-////                //add more
-////            //add most lynked posts
-////            //add friend list
-////            case 1:
-////            //add map view
-////                //set add button to invisible?
-////                return new MapFragment();
-////            default:
-////                return new PostListFragment();
-////        }
-////    }
 
 }

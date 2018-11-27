@@ -3,6 +3,7 @@ package com.bitanga.android.lynkactivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +43,7 @@ implements com.google.firebase.firestore.EventListener<DocumentSnapshot>, Commen
 
     private RecyclerView mCommentRecycler;
 
+    private TextView mUserView;
     private TextView mContentView;
     private TextView mTimestampView;
     private ImageView mPhotoView;
@@ -52,7 +54,6 @@ implements com.google.firebase.firestore.EventListener<DocumentSnapshot>, Commen
     private FirebaseFirestore db;
     private DocumentReference mPostRef;
     private ListenerRegistration mPostRegistration;
-
     private CommentAdapter mCommentAdapter;
 
 
@@ -70,7 +71,7 @@ implements com.google.firebase.firestore.EventListener<DocumentSnapshot>, Commen
 
         db = FirebaseFirestore.getInstance();
 
-        mPostRef = db.collection("users").document("testUser").collection("posts").document("postId");
+        mPostRef = db.collection("users").document("testUser").collection("posts").document(postId);
 
         //get comments
         Query commentsQuery = mPostRef
@@ -89,7 +90,7 @@ implements com.google.firebase.firestore.EventListener<DocumentSnapshot>, Commen
                 }
             }
         };
-        //error here: java.lang.NullPointerException: Attempt to invoke virtual method 'void android.support.v7.widget.RecyclerView.setLayoutManager(android.support.v7.widget.RecyclerView$LayoutManager)' on a null object reference
+
         mCommentRecycler.setLayoutManager(new LinearLayoutManager(this));
         mCommentRecycler.setAdapter(mCommentAdapter);
 
@@ -136,18 +137,22 @@ implements com.google.firebase.firestore.EventListener<DocumentSnapshot>, Commen
     }
 
     private void onPostLoaded(Post post) {
+        mUserView = (TextView) findViewById(R.id.post_username);
         mContentView = (TextView)findViewById(R.id.post_content);
         mTimestampView = (TextView) findViewById(R.id.post_timestamp);
         mPhotoView = (ImageView) findViewById(R.id.post_photo);
         mAddCommentButton = (FloatingActionButton) findViewById(R.id.fabShowCommentDialog);
 
-        //error
-        //java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.String com.bitanga.android.lynkactivity.Post.getContent()' on a null object reference
-        /**error: post is null**/
+        /**need to change this**/
+        mUserView.setText("Test User");
+
         mContentView.setText(post.getContent());
         mTimestampView.setText(post.getTimestamp().toString());
         if (post.hasPhoto()) {
             mPhotoView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mPhotoView.setVisibility(View.GONE);
         }
 
         mAddCommentButton.setOnClickListener(new View.OnClickListener() {

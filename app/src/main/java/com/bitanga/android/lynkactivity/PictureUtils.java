@@ -7,10 +7,19 @@ import android.graphics.Point;
 import android.support.v4.app.ActivityCompat;
 
 public class PictureUtils {
+//    public static Bitmap postBitMap;
+//
+//    public static Bitmap getPostBitMap() {
+//        return postBitMap;
+//    }
+
     public static Bitmap getScaledBitmap(String path, Activity activity) {
         Point size = new Point();
+        /**error here:java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowManager android.app.Activity.getWindowManager()' on a null object reference**/
         activity.getWindowManager().getDefaultDisplay()
                 .getSize(size);
+
+//        postBitMap = getScaledBitmap(path, size.x, size.y);
 
         return getScaledBitmap(path, size.x, size.y);
     }

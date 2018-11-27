@@ -9,10 +9,13 @@ public class Post {
 
     private UUID mId;
     private String mContent;
+    private String mUsername;
 
     private int mComments;
     private int mLikes;
     private int mNumOfTimesFlagged;
+
+    private String mPhotoFileName;
 
     private ImageView mPostPhoto;
 //    private User user;
@@ -33,6 +36,14 @@ public class Post {
     }
 
     public UUID getId() {return mId;}
+
+    public String getUsername() {
+        return mUsername;
+    }
+
+    public void setUsername(String username) {
+        mUsername = username;
+    }
 
     public String getContent() {
         return mContent;
@@ -76,7 +87,11 @@ public class Post {
     }
 
     public String getPhotoFilename() {
-        return "IMG_" + getId().toString() + ".jpg";
+        return mPhotoFileName;
+    }
+
+    public void setPhotoFilename(String photoFileName) {
+        mPhotoFileName = photoFileName;
     }
 
     public boolean hasPhoto() {

@@ -17,7 +17,6 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         }
         else if (position == 1) {
             return new GoogleMapFragment();
-//            return new MapsActivity();
         }
         else if (position == 2) {
             return new MostLynkedPostListFragment();

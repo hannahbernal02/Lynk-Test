@@ -19,6 +19,7 @@ import android.util.Log;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,27 +48,17 @@ implements PostFragment.PostListener{
     private FirebaseFirestore db;
     private DocumentReference mUserRef;
     private ListenerRegistration mUserRegistration;
-    //might need this? since adding post here, not in postlistactivity
-    //postlistactivity uses postadapter to check changes in list
+
+
     private PostAdapter mPostAdapter;
 
     private PostFragment mPostFragment;
 
-
-    public static Intent newIntent(Context packageContext, UUID postId) {
-        Intent intent = new Intent(packageContext, PostPagerActivity.class);
-        intent.putExtra(EXTRA_POST_ID, postId);
-        return intent;
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_pager);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        /**probably won't need this line of code**/
-        UUID postId = (UUID) getIntent()
-                .getSerializableExtra(EXTRA_POST_ID);
 
         mViewPager = (ViewPager) findViewById(R.id.post_view_pager);
 
@@ -76,18 +67,10 @@ implements PostFragment.PostListener{
 
         mPostFragment = new PostFragment();
 
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .add(android.R.id.content, PostFragment.newInstance()).commit();
 
-
-
-//        Intent intent = new Intent(this, PostFragment.class);
-//        /**goes to PostFragment**/
-//        startActivity(intent);
-
-//        FragmentManager fragmentManager = getSupportFragmentManager();
         PostFragment.newInstance();
 
     }
@@ -115,6 +98,7 @@ implements PostFragment.PostListener{
 
     @Override
     public void onPost(Post post) {
+        Log.d(LOG_VAL, "TEST: " + post.getContent());
         addPost(mUserRef, post)
                 .addOnSuccessListener(this, new OnSuccessListener<Void>() {
                     @Override
@@ -138,16 +122,17 @@ implements PostFragment.PostListener{
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                User user = transaction.get(userRef).toObject(User.class);
+//                User user = transaction.get(userRef).toObject(User.class);
 
                 //add user specs?
 
-                transaction.set(userRef, user);
+//                transaction.set(userRef, user);
                 transaction.set(postRef, post);
                 return null;
             }
         });
     }
+
     @Override
     public void onBackPressed() {
 

@@ -13,55 +13,64 @@
         android:layout_height="101dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="29dp"
+        android:layout_marginTop="144dp"
         app:srcCompat="@mipmap/sanrio" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView9"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Create your Lynk account"
-        android:textColor="#000000"
+        android:layout_marginTop="257dp"
+        android:text="@string/create_lynk_account"
+        android:textColor="@color/darkGray"
         android:textSize="25dp" />
 
     <EditText
         android:id="@+id/register_mail"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="186dp"
-        android:background="#ADD8E6"
-        android:drawableLeft="@drawable/ic_acc"
-        android:ems="10"
-        android:hint="calbaptist.edu emails only"
-        android:inputType="textWebEmailAddress" />
-
-    <EditText
-        android:id="@+id/register_password"
-        android:layout_width="296dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="193dp"
-        android:background="#ADD8E6"
+        android:layout_marginBottom="283dp"
+        android:background="@color/colorPrimary"
+        android:drawableLeft="@drawable/ic_acc"
+        android:ems="10"
+        android:hint="@string/cbu_email_only"
+        android:inputType="textWebEmailAddress"
+        android:textColor="@color/darkGray"
+        android:textColorHint="@color/mediumGray" />
+
+    <EditText
+        android:id="@+id/register_password"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="173dp"
+        android:background="@color/colorPrimary"
         android:drawableLeft="@drawable/ic_pass"
         android:ems="10"
-        android:hint="New password"
-        android:inputType="textPassword" />
+        android:hint="@string/new_password"
+        android:inputType="textPassword"
+        android:textColor="@color/darkGray"
+        android:textColorHint="@color/mediumGray" />
 
     <EditText
         android:id="@+id/register_username"
-        android:layout_width="296dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="#ADD8E6"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="228dp"
+        android:background="@color/colorPrimary"
         android:drawableLeft="@drawable/ic_acc"
         android:ems="10"
-        android:hint="Choose a username"
-        android:inputType="textPersonName" />
+        android:hint="@string/choose_username"
+        android:inputType="textPersonName"
+        android:textColor="@color/darkGray"
+        android:textColorHint="@color/mediumGray" />
 
     <Button
         android:id="@+id/create_button"
@@ -69,17 +78,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="116dp"
-        android:text="Register!"/>
+        android:layout_marginBottom="114dp"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:text="@string/register"
+        android:textSize="16dp" />
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"></RelativeLayout>
 
-    </RelativeLayout>
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
@@ -87,6 +97,4 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:visibility="gone"/>
-
-
 </RelativeLayout>

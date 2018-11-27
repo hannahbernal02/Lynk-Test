@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 //import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -85,15 +88,10 @@ public class PostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-//        UUID postId = (UUID) getArguments().getSerializable(ARG_POST_ID);
 
-        //get rid of this
-//        mPost = PostLab.get(getActivity()).getPost(postId);
-        //and this
-//        mPhotoFile = PostLab.get(getActivity()).getPhotoFile(mPost);
+        mPost = new Post();
 
 //        db = FirebaseFirestore.getInstance();
-//        mPostRef = db.collection("users").document("testUser").collection("posts").document(postId.toString());
     }
 
     @Override
@@ -102,7 +100,7 @@ public class PostFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_post, container, false);
 
         mContentField = (EditText) v.findViewById(R.id.post_content);
-//        mContentField.setText(mPost.getContent());
+        mContentField.setText(mPost.getContent());
         mContentField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -111,7 +109,7 @@ public class PostFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                mPost.setContent(s.toString());
+                mPost.setContent(s.toString());
             }
 
             @Override
@@ -119,68 +117,80 @@ public class PostFragment extends Fragment {
 
             }
         });
-//        mPost.setTimestamp(Calendar.getInstance().getTime());
+        /**set timestamp**/
+        mPost.setTimestamp(Calendar.getInstance().getTime());
 
+        /**when user clicks on submit button**/
         mSubmitButton = (Button) v.findViewById(R.id.submit_post);
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                savePost();
-//                if (mPost.getContent() == null) {
-                if (mContentField.getText().toString() == null) {
+                if (mPost.getContent() == null) {
                     Toast.makeText(getContext(),
                             "Cannot submit an empty post",
                             Toast.LENGTH_SHORT).show();
                 } else {
                     //when clicked, go back to PostListActivity menu
-                    //update post
-//                    PostLab.get(getContext()).updatePost(mPost);
                     /**when click submit, create new post**/
                     /**go back in PostPagerActivity, which will
                      * add new post in database
                      */
-                    Post post = new Post();
-                    post.setContent(mContentField.getText().toString());
+//                    post.setContent(mContentField.getText().toString());
+
                     if (mPhotoView != null) {
-                        post.setHasPhoto(true);
+                        mPost.setHasPhoto(true);
                     }
                     else {
-                        post.setHasPhoto(false);
+                        mPost.setHasPhoto(false);
                     }
-                    post.setComments(0);
-                    post.setLikes(0);
-                    post.setNumOfTimesFlagged(0);
-                    //not sure if this is right
-                    post.setTimestamp(new Date());
 
+                    /**leave for now**/
+                    mPost.setUsername("testName");
+//                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//
+//                    String userName = user.getDisplayName();
+//                    if (TextUtils.isEmpty(user.getDisplayName())) {
+//                        userName = user.getEmail();
+//                    }
+//                    mPost.setUsername(userName);
+                    mPost.setComments(0);
+                    mPost.setLikes(0);
+                    mPost.setNumOfTimesFlagged(0);
+
+                    if (mPostListener != null) {
+                        mPostListener.onPost(mPost);
+                    }
+//                    if(mPost.getNumOfTimesFlagged() == 3){
+//
+//                    }
                     /**go back to postpageractivity**/
                     getActivity().finish();
                 }
             }
         });
 
+        /**define mPhotoFile**/
+        File filesDir = getContext().getFilesDir();
+        String photoFile = "IMG_" + mPost.getId().toString() + ".jpg";
+        mPost.setPhotoFilename(photoFile);
+        mPhotoFile = new File(filesDir, photoFile);
+        Log.d(LOG_VAL, "PostFragment's mPhotoFile: " + mPhotoFile.toString());
+
         mPhotoButton = (ImageButton) v.findViewById(R.id.post_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&
                 captureImage.resolveActivity(getActivity().getPackageManager()) != null;
-        mPhotoButton.setEnabled(canTakePhoto);
 
+        /**when user clicks mPhotoButton**/
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(LOG_VAL, "this: " + ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.CAMERA));
-                Log.d(LOG_VAL, "that:  " + PackageManager.PERMISSION_GRANTED);
-
-                Log.d(LOG_VAL, "is this true? " + (ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED));
-
-                //if the user has permission for camera use, allows for camera to bue sued
+                Log.d(LOG_VAL, "mPhotoButton clicked!");
+                //if the user has permission for camera use, allows for camera to be used
                 if (ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
 //                    dispatchTakePictureIntent();
 
-                    //use camera, store image to thumbnail
                     Uri uri = FileProvider.getUriForFile(getActivity(),
                             "com.bitanga.android.lynkactivity.fileprovider",
                             mPhotoFile);
@@ -207,10 +217,25 @@ public class PostFragment extends Fragment {
         mPhotoView = (ImageView) v.findViewById(R.id.post_photo);
         //default to no photo uploaded
         mPhotoView.setVisibility(View.INVISIBLE);
-//        updatePhotoView();
+        updatePhotoView();
+
+        Log.d(LOG_VAL, "is mPhotoView visible?: " + mPhotoView.isShown());
 
         return v;
 
+    }
+
+    private void updatePhotoView() {
+        Log.d(LOG_VAL, "updating photoView");
+        if (mPhotoView == null || !mPhotoFile.exists()) {
+            mPhotoView.setImageDrawable(null);
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+                    mPhotoFile.getPath(), getActivity());
+            mPhotoView.setImageBitmap(bitmap);
+            mPhotoView.setVisibility(View.VISIBLE);
+            mPost.setHasPhoto(true);
+        }
     }
 
     @Override
@@ -221,32 +246,6 @@ public class PostFragment extends Fragment {
             mPostListener = (PostListener) context;
         }
     }
-
-
-
-    /**Saves post to firebase database when user submits**/
-//    private void savePost() {
-//        Map<String, Object> post = new HashMap<>();
-//        post.put("uuid", mPost.getId().toString());
-//        post.put("content", mPost.getContent());
-//        //works!
-//        if (mPhotoView != null && mPhotoFile.exists()) {
-//            post.put("picture", mPost.getPhotoFilename());
-//        }
-//        mCollectRef.document(mPost.getId().toString())
-//                .set(post)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Log.d(LOG_VAL, "Post has been saved");
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                Log.w(LOG_VAL, "Post did not get saved", e);
-//            }
-//        });
-//    }
 
     /**Inflates view of option menu
      *
@@ -304,17 +303,6 @@ public class PostFragment extends Fragment {
         }
     }
 
-    private void updatePhotoView() {
-        if (mPhotoView == null || !mPhotoFile.exists()) {
-            mPhotoView.setImageDrawable(null);
-        } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
-            mPhotoView.setImageBitmap(bitmap);
-            mPhotoView.setVisibility(View.VISIBLE);
-//            mPost.setHasPhoto(true);
-        }
-    }
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -379,7 +367,7 @@ public class PostFragment extends Fragment {
 
             getActivity().revokeUriPermission(uri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//            updatePhotoView();
+            updatePhotoView();
         }
 
     }
